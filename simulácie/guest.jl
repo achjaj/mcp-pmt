@@ -66,7 +66,7 @@ function Tc(T₀::Float64, ϕ::Float64, q::Float64, E::Float64, m::Float64, d::F
 end
 
 function create_electron(T₀::Float64, ϕ::Float64, l::Float64, idx::Int)
-    [T₀, -1., ϕ, -1., l, l, idx]
+    [T₀, -1.0, ϕ, -1.0, l, l, idx]
 end
 
 create_electron(parentT₀::Float64, l::Float64, idx::Int, rd::Rayleigh, cd::Cosine) = create_electron(parentT₀ * rand(rd), rand(cd), l, idx)
@@ -169,6 +169,7 @@ queue_file = open("queue", "w+")
 queue = mmap(queue_file, Matrix{Float64}, (queue_len, 7))
 
 output_file = open("output-$(now())", "w")
+write(output_file, "[\n")
 
 function add_to_queue(electron::Vector{Float64})
     global queue_bottom_ptr
@@ -179,8 +180,8 @@ function add_to_queue(electron::Vector{Float64})
 end
 
 function add_to_output(electron::Vector)
-    write(output_file, "$electron\n")
-    flush(output_file)
+    write(output_file, "\t$electron,\n")
+    #flush(output_file)
 end
 
 function get_top(count=Threads.nthreads())
@@ -188,7 +189,7 @@ function get_top(count=Threads.nthreads())
     global queue_bottom_ptr
 
     rend = queue_top_ptr + count - 1
-    range = queue_top_ptr:(rend <= queue_bottom_ptr ? rend : (queue_bottom_ptr-1))
+    range = queue_top_ptr:(rend <= queue_bottom_ptr ? rend : (queue_bottom_ptr - 1))
     global queue_top_ptr = range[end] + 1
 
     [[[j] for j in queue[i, :]] for i in range]     # converts array to array of arrays, so batch is array of arrays of arrays (electron is array of arrays)  
@@ -210,7 +211,7 @@ function simulate2(E::Float64, d::Float64, L::Float64, initT₀::Float64, initϕ
         left = Int[]
 
         println("Processing electrons: $(getindex.(batch, 7)) ($(queue_top_ptr - 1) / $(queue_bottom_ptr - 1) / $queue_len)")
-        while length(left) != length(batch) 
+        while length(left) != length(batch)
             @threads for (bi, electron) in collect(enumerate(batch))
                 params = electron[1][end], electron[3][end]
                 lcol = lc(params..., q, E, d) + electron[6][end]                            # calculate the point of collision
@@ -251,48 +252,54 @@ function simulate2(E::Float64, d::Float64, L::Float64, initT₀::Float64, initϕ
     end
 end
 
-leaveTime(T₀::Float64, ϕ::Float64, q::Float64, E::Float64, m::Float64, L::Float64, l₀::Float64) = (sqrt(2*T₀*m*cos(ϕ)^2 + 2*q*E*m*(L - l₀)) - sqrt(2*T₀*m)*cos(ϕ))/(q*E)
-v²(t::Float64, T₀::Float64, ϕ::Float64, m::Float64, q::Float64, E::Float64) = 2T₀/m + q^2*E^2/m^2*t^2 + sqrt(2*T₀/m)*cos(ϕ)*q*E/m*t
-Tleave(T₀::Float64, ϕ::Float64, m::Float64, q::Float64, E::Float64, L::Float64, l₀::Float64) = 1/2*m*v²(leaveTime(T₀, ϕ, q, E, m, L, l₀), T₀, ϕ, m, q, E)
-leaveAng(T₀::Float64, ϕ::Float64, m::Float64, q::Float64, E::Float64, L::Float64, l₀::Float64) = acos((sqrt(2T₀/m)*sin(ϕ))/sqrt(v²(leaveTime(T₀, ϕ, q, E, m, L, l₀), T₀, ϕ, m, q, E)))
+leaveTime(T₀::Float64, ϕ::Float64, q::Float64, E::Float64, m::Float64, L::Float64, l₀::Float64) = (sqrt(2 * T₀ * m * cos(ϕ)^2 + 2 * q * E * m * (L - l₀)) - sqrt(2 * T₀ * m) * cos(ϕ)) / (q * E)
+v²(t::Float64, T₀::Float64, ϕ::Float64, m::Float64, q::Float64, E::Float64) = 2T₀ / m + q^2 * E^2 / m^2 * t^2 + sqrt(2 * T₀ / m) * cos(ϕ) * q * E / m * t
+Tleave(T₀::Float64, ϕ::Float64, m::Float64, q::Float64, E::Float64, L::Float64, l₀::Float64) = 1 / 2 * m * v²(leaveTime(T₀, ϕ, q, E, m, L, l₀), T₀, ϕ, m, q, E)
+leaveAng(T₀::Float64, ϕ::Float64, m::Float64, q::Float64, E::Float64, L::Float64, l₀::Float64) = acos((sqrt(2T₀ / m) * sin(ϕ)) / sqrt(v²(leaveTime(T₀, ϕ, q, E, m, L, l₀), T₀, ϕ, m, q, E)))
 
 d = 10e-6  # m
 L = 40 * d   # m
 E = 4000 / L # V/m
 eV = 1.602e-19 # J
 
-#simulate2(E, d, L, 100.0, deg2rad(45), 0.0, m=0.511)
+simulate2(E, d, 20 * d, 100.0, deg2rad(45), 0.0, m=0.511)
 
+skip(output_file, -2)
+write(output_file, "\n]")
 close(output_file)
 close(queue_file)
 
-# ===========================================================================================
-electrons = [JSON.parse(line) for line in readlines("output-2022-05-05T18:43:24.993")]
+# ==============================================================================================
+function analyse(path)
+    file = open(path, "r")
+    electrons = JSON.parse(line)
+    file.close()
 
-Tls = [Tleave(electron[1][end], electron[3][end], 0.511, 1.602e-19, 4000/(40*10e-6), 40*10e-6, electron[6][end-1]) for electron in electrons]
-TlsHist = fit(Histogram, Tls, 0:1:10e3)
-TlsHP = scatter(x = TlsHist.edges[1], y = TlsHist.weights)
+    Tls = [Tleave(electron[1][end], electron[3][end], 0.511, 1.602e-19, 4000 / (40 * 10e-6), 40 * 10e-6, electron[6][end-1]) for electron in electrons]
+    TlsHist = fit(Histogram, Tls, 0:1:10e3)
+    TlsHP = scatter(x=TlsHist.edges[1], y=TlsHist.weights)
 
-T₀s = vcat(getindex.(electrons, 1)...)
-T₀sHist = fit(Histogram, T₀s, 0:100:10e3)
-T₀sHP = scatter(x = T₀sHist.edges[1], y = T₀sHist.weights)
+    T₀s = vcat(getindex.(electrons, 1)...)
+    T₀sHist = fit(Histogram, T₀s, 0:100:10e3)
+    T₀sHP = scatter(x=T₀sHist.edges[1], y=T₀sHist.weights)
 
-Tcs = filter(x -> x != -1, vcat(getindex.(electrons, 2)...))
-TcsHist = fit(Histogram, Tcs, 0:100:10e3)
-TcsHP = scatter(x = TcsHist.edges[1], y = TcsHist.weights)
+    Tcs = filter(x -> x != -1, vcat(getindex.(electrons, 2)...))
+    TcsHist = fit(Histogram, Tcs, 0:100:10e3)
+    TcsHP = scatter(x=TcsHist.edges[1], y=TcsHist.weights)
 
-ϕs = vcat(getindex.(electrons, 3)...)
-ϕsHist = fit(Histogram, ϕs, 0:1e-3:maximum(ϕs))
-ϕsHP = scatter(x = ϕsHist.edges[1], y = ϕsHist.weights)
+    ϕs = vcat(getindex.(electrons, 3)...)
+    ϕsHist = fit(Histogram, ϕs, 0:1e-3:maximum(ϕs))
+    ϕsHP = scatter(x=ϕsHist.edges[1], y=ϕsHist.weights)
 
-θs = vcat(getindex.(electrons, 4)...)
-θsHist = fit(Histogram, θs, 1:1e-3:1.4)
-θsHP = scatter(x = θsHist.edges[1], y = θsHist.weights)
+    θs = vcat(getindex.(electrons, 4)...)
+    θsHist = fit(Histogram, θs, 1:1e-3:1.4)
+    θsHP = scatter(x=θsHist.edges[1], y=θsHist.weights)
 
-las = rad2deg.([leaveAng(electron[1][end], electron[3][end], 0.511, 1.602e-19, 4000/(40*10e-6), 40*10e-6, electron[6][end-1]) for electron in electrons])
-lasHist = fit(Histogram, las, rad2deg(1):rad2deg(1e-3):maximum(las))
-lasHP = scatter(x = lasHist.edges[1], y = lasHist.weights)
+    las = rad2deg.([leaveAng(electron[1][end], electron[3][end], 0.511, 1.602e-19, 4000 / (40 * 10e-6), 40 * 10e-6, electron[6][end-1]) for electron in electrons])
+    lasHist = fit(Histogram, las, rad2deg(1):rad2deg(1e-3):maximum(las))
+    lasHP = scatter(x=lasHist.edges[1], y=lasHist.weights)
 
-dbc = vcat([diff(electron[end-1]) for electron in electrons]...)
-dbcHist = fit(Histogram, dbc, 1e-5:1e-7:maximum(dbc))
-dbcHP = scatter(x = dbcHist.edges[1], y = dbcHist.weights)
+    dbc = vcat([diff(electron[end-1]) for electron in electrons]...)
+    dbcHist = fit(Histogram, dbc, 1e-5:1e-7:maximum(dbc))
+    dbcHP = scatter(x=dbcHist.edges[1], y=dbcHist.weights)
+end
