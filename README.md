@@ -25,3 +25,4 @@ The electron array has this format: `[T₀, Tc, ϕ, θ, l₀, l, idx]`.
 ]
 
 ```
+The negative ones should be ignored as they are used to initialize the arrays. I shall remove them in the future.
