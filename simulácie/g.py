@@ -12,12 +12,13 @@ Qs = C*Vs
 L = k*Lmcp
 
 
+# time and space discretization
 sizes = (50, 50)
 times = np.linspace(0, 5e-8, sizes[1])
 xcoord = np.linspace(0, L, sizes[0])
 
-i0 = np.repeat(1.75e-5, sizes[1])
-psi0 = np.zeros(sizes[0])
+i0 = np.repeat(1.75e-5, sizes[1]) # constant input signal
+psi0 = np.zeros(sizes[0])   # unsaturated channel
 
 # Q0 calculation
 Q0 = np.zeros(sizes[1])
@@ -51,7 +52,7 @@ for i in np.concatenate((np.linspace(0.1, 1, 10), np.ones(30))):
     # calculate Qw/Qs
     QwQs = np.zeros(sizes[1])
     for t in range(sizes[1]):
-        QwQs[t] = np.trapz(QQs[:, t], xcoord)/L - Q0[t]/Qs
+        QwQs[t] = np.trapz(QQs[:, t], xcoord)/L
 
     QwQss.append(QwQs)
 
@@ -59,7 +60,7 @@ for i in np.concatenate((np.linspace(0.1, 1, 10), np.ones(30))):
     psi = np.zeros(sizes)
     for x in range(sizes[0]):
         for t in range(sizes[1]):
-            psi[x, t] = psi0[x] + Q0[t]/Qs + (QwQs[t] - QQs[x, t])
+            psi[x, t] = psi0[x] + (QwQs[t] - QQs[x, t])
 
     psis.append(psi)
 
@@ -70,4 +71,5 @@ for i in np.concatenate((np.linspace(0.1, 1, 10), np.ones(30))):
 
     gs.append(g)
 
-#print(gs)
+
+print(gs[-1])
