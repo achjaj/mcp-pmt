@@ -71,7 +71,8 @@ function calculateGain(par::Parameters, i₀, ψ₀, times, xcoords)
     tind = 1:tsize
     xind = 1:xsize
 
-    ϵs = [range(0.1, 1, length = 10); fill(1, 20)]
+    n₀ = 20
+    ϵs = [n <= n₀ ? 0.03+0.97*(1- ((n₀ - n)/n₀)^2) : 1 for n in 1:30]
     N = length(ϵs)
     ϵind = 1:N
 
@@ -166,3 +167,4 @@ else
         end
     end
 end
+println("Done!")
