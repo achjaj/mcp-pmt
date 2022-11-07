@@ -20,6 +20,7 @@ include("drawing.jl")
 include("see.jl")
 
 function oneArc(T, y₀)
+    println("\t\tT: $T")
     v0 = rndVec(v(T*q)) # the energy is in eV, but we want the velocity in SI
     t = tc(v0[[1, 3]])
 
@@ -35,19 +36,23 @@ function oneElectron(queue, T₀ = 5, y₀ = 0)
         println("\tStep $sn")
         s = steps[end]
 
-        #=
+        
         vc = v̅(s[1:2]...)
-        θc = acos(vc[3]/norm(vc))
+        θc = acos(vc[2]/norm(vc))
         Tc = 1/2*m*norm(vc)^2 / q # in eV
         println("\t\tTc: $Tc")
 
-        seeE = see(Tc, θc)
+        seeE = abs.(see(Tc, θc))
         println("\t\tseeE: $seeE")
-        for energy in seeE[2:end]
+
+        length(seeE) == 0 && break
+
+        #=for energy in seeE[2:end]
             push!(queue, (energy, s[end]))
         end=#
+        println(Tc - sum(seeE))
 
-        push!(steps, oneArc(rand(Rayleigh(5)), s[end]))
+        push!(steps, oneArc(seeE[end], s[end]))
 
         sn += 1
     end
