@@ -32,27 +32,31 @@ function oneElectron(queue, T₀ = 5, y₀ = 0)
     steps = [oneArc(T₀, y₀)]
 
     sn = 2;
+    nT₀ = T₀
     while steps[end][end] < L
         println("\tStep $sn")
         s = steps[end]
 
-        
         vc = v̅(s[1:2]...)
-        θc = acos(vc[2]/norm(vc))
-        Tc = 1/2*m*norm(vc)^2 / q # in eV
+        θc = asin(vc[2]/norm(vc))
+
+        S = length(steps) == 1 ? s[end] : s[end] - steps[end-1][end]
+        Tc =  V*S/L + nT₀ #1/2*m*norm(vc)^2 / q # in eV
+
         println("\t\tTc: $Tc")
 
-        seeE = abs.(see(Tc, θc))
+        seeE = see(Tc, θc)
         println("\t\tseeE: $seeE")
 
-        length(seeE) == 0 && break
+        #length(seeE) == 0 && break
 
         #=for energy in seeE[2:end]
             push!(queue, (energy, s[end]))
         end=#
-        println(Tc - sum(seeE))
 
-        push!(steps, oneArc(seeE[end], s[end]))
+        nT₀ = rand(Rayleigh(5))#length(seeE) == 1 ? seeE[1] : Tc - sum(seeE)
+
+        push!(steps, oneArc(nT₀, s[end]))
 
         sn += 1
     end
@@ -61,22 +65,39 @@ function oneElectron(queue, T₀ = 5, y₀ = 0)
 end
 
 # run the simulation
-function run()
+function run(;V_in = 2e3, L_in = 1.5e-3, R_in = 1e-5, q_in = 1.6e-19, m_in = 9.1e-31)
+    # MCP-PMT parameters
+    global V
+    global L
+    global R
+    global q
+    global m
+    global a
+
+    V = V_in
+    L = L_in
+    R = R_in
+    q = q_in
+    m = m_in
+
+    # e⁻ acceleration
+    a = q*V/L/m
+
+
     queue = [(5.0, 0.0)] # queue of electrons
     result = []
 
     en = 1
-    while !isempty(queue)
+    #while !isempty(queue)
         println("Working on electron $en")
         sv = popfirst!(queue)
         push!(result, oneElectron(queue, sv...))
 
         en += 1
-    end
+    #end
 
     return result
 end
 
 result = run()
 steps = result[1]
-#plt, ax = drawSteps(result[1])

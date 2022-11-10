@@ -1,5 +1,6 @@
 using GLMakie
 using GeometryBasics: Cylinder, Point3f0
+using Printf
 
 rotMat(β) = [cos(β) 0 sin(β); 0 1 0; -sin(β) 0 cos(β)]
 
@@ -7,7 +8,7 @@ rotMat(β) = [cos(β) 0 sin(β); 0 1 0; -sin(β) 0 cos(β)]
 function preparePlot()
     #creates empty plot
     plt = Figure()
-    ax = Axis3(plt[1, 1], aspect = (1, 3, 1), #=limits = (nothing, nothing, 0, L, nothing, nothing)=#)
+    ax = Axis3(plt[1, 1], aspect = (1, 3, 1), title = "V = $(@sprintf "%.0e" V) V" #=limits = (nothing, nothing, 0, L, nothing, nothing)=#)
 
     # draw the cylinder in red color and transparency
     mesh!(ax, Cylinder{3, Float32}(Point3f0(0.0, 0.0, R), Point3f0(0.0, L, R), R), color = (:red, 0.3), transparency=true)
@@ -31,7 +32,7 @@ function drawSteps(steps, res = 100)
             d = 2R
         end
 
-        ratio = norm(d)/R/2
+        ratio = d/R/2
         abs(ratio) > 1 && @error "Step $i: ratio > 1 ($ratio)"
 
         sgn = r0[1] > 0 ? -1 : 1
@@ -51,4 +52,35 @@ function drawSteps(steps, res = 100)
     end
 
     plt, ax
+end
+
+function drawPositions(positions)
+    ax, plt = preparePlot()
+    lines!(ax, hcat(positions...))
+
+    plt, ax
+end
+
+function plotT₀(steps)
+    plt = Figure()
+    ax = Axis(plt[1, 1], xlabel = "Step", ylabel = "T₀ [eV]", subtitle = "V = $(@sprintf "%.0e" V) V", title = "Energy at the start of each step")
+
+    v̄s = getindex.(steps, 1)
+    vs = norm.(v̄s)
+    Ts = [0.5*m*v^2 /q for v in vs]
+
+    scatterlines!(ax, Ts)
+
+    plt
+end
+
+function sVstc(steps)
+    plt = Figure()
+    ax = Axis(plt[1, 1], xlabel = "t [s]", ylabel = "y [m]", subtitle = "V = $(@sprintf "%.0e" V) V", title = "Position along the channel vs. time")
+
+    tcs = [0; getindex.(steps, 2)]
+    ss = [0; getindex.(steps, 3)]
+    scatterlines!(ax, cumsum(tcs), ss)
+
+    plt
 end

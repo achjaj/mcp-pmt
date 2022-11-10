@@ -1,16 +1,6 @@
 using LinearAlgebra
 using Distributions
 
-# MCP-PMT params
-V = 2e3     # V
-L = 1.5e-3  # m
-R = 1e-5    # m
-q = 1.6e-19 # C
-m = 9.1e-31 # kg
-
-# e⁻ acceleration
-a = q*V/L/m
-
 # initialize distributions for generating random values
 ϕDist = Uniform(0, π)      # ϕ ∈ [0, π]
 θDist = Cosine(π/4,π/4)     # θ ∈ [0, π/2]

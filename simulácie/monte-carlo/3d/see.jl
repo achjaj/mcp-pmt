@@ -21,15 +21,15 @@ E̅ts(θ; E = 277, t3 = 0.7, t4 = 1) = E*(1 + t3*(1 - cos(θ)^t4))
 δe0(E; P1e_inf = 0.02, P1e = 0.496, E̅e = 0, W = 60.86, p = 1) = P1e_inf + (P1e - P1e_inf)*exp(-((abs(E - E̅e)/W)^p)/p)
 δr0(E; P1r_inf = 0.2, Er = 0.041, r = 0.104) = P1r_inf*(1 - exp(-(E/Er)^r)) 
 
-#=
+
 f1e(E, E0, δe, σ = 2) = H(E)*H(E0 - E)*δe*(2*exp(-((E-E0)^2)/(2*σ^2)))/(sqrt(2π)*σ*erf(E0/(sqrt(2)*σ)))
 f1r(E, E0, δr, q = 0.5) = H(E)*H(E0 - E)*δr*(q + 1)*(E^q)/E0^(q+1)
-=#
+
 
 Fn(n, Pn, E0, ϵ, p) = Pn/((ϵ^p*Γ(p))^n * P(n*p, E0/ϵ))
 fnts(E, F, p, ϵ) = H(E)*F*E^(p - 1)*exp(-E/ϵ)
 
-function generateOneEnergy(δe, δr, P1, E0; σ = 2, q = 0.5)
+function generateOneEnergy(δe::Number, δr::Number, P1::Number, E0; σ = 2, q = 0.5)
     δ1 = δe + δr + P1
 
     ae = δe/δ1
@@ -42,7 +42,7 @@ function generateOneEnergy(δe, δr, P1, E0; σ = 2, q = 0.5)
     ae + ar <= u < 1 && return ϵn[1] * invP(pn[1], rand(Uniform())*P(pn[1], E0/ϵn[1]))
 end
 
-function generateNEnergies(n, E0)
+function generateNEnergies(n::Integer, E0::Number)
     x0 = E0/ϵn[n]
     P0 = P(n*pn[n], x0)
 
@@ -59,29 +59,43 @@ end
 
 function samplePDF(pdf::AbstractArray)
     cdf = cumsum(pdf)
-    a = rand(cdf)
+    a = rand() * maximum(cdf)
 
-    findfirst(x -> x == a, cdf)
+    a <= cdf[1] && return 1
+    for i in 2:length(cdf)
+        cdf[i - 1] < a <= cdf[i] && return i
+    end
 end
 
-function see(T::Number, θ::Number; M = 10, e1 = 0.26, e2 = 2, r1 = 0.26, r2 = 2)
+function getδs(T::Number, θ::Number; e1 = 0.26, e2 = 2, r1 = 0.26, r2 = 2)
     δe = δe0(T)*(1 + e1*(1 - cos(θ)^e2))
     δr = δr0(T)*(1 + r1*(1 - cos(θ)^r2))
     δts = δ̅ts(θ)*D(T/E̅ts(θ))
 
-
     δ̃ts = δts/(1 - δe - δr)
 
-    P̃n_ts = x -> pdf(Poisson(δ̃ts), x)
+    return δe, δr, δ̃ts
+end
 
-    d_pdf = (1 - δe - δr) .* P̃n_ts.(1:M)
-    d_pdf[2] = d_pdf[2] + δe + δr
+function getPn(δe::Number, δr::Number, δ̃ts::Number, M::Integer)
+    P̃n_ts = n -> pdf(Poisson(δ̃ts), n)
 
-    n = samplePDF(d_pdf)
+    Pn = (1 - δe - δr) .* P̃n_ts.(0:M)
+    Pn[2] = Pn[2] + δe + δr
+
+    return Pn
+end
+
+function see(T::Number, θ::Number; M = 10)
+    δe, δr, δ̃ts = getδs(T, θ)
+
+    Pn = getPn(δe, δr, δ̃ts, M)
+
+    n = samplePDF(Pn) - 1
     
     n == 0 && return Float64[]
     
-    n == 1 && return [generateOneEnergy(δe, δr, d_pdf[2], T)]
+    n == 1 && return [abs(generateOneEnergy(δe, δr, Pn[2], T))]
 
     return generateNEnergies(n, T)
 end
