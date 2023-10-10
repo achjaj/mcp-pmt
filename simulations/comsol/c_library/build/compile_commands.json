@@ -1,0 +1,50 @@
+[
+{
+  "directory": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build",
+  "command": "/usr/bin/cc -Dcfunc_EXPORTS  -O3 -DNDEBUG -fPIC -o CMakeFiles/cfunc.dir/src/interface.c.o -c /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/interface.c",
+  "file": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/interface.c",
+  "output": "CMakeFiles/cfunc.dir/src/interface.c.o"
+},
+{
+  "directory": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build",
+  "command": "/usr/bin/cc -Dcfunc_EXPORTS  -O3 -DNDEBUG -fPIC -o CMakeFiles/cfunc.dir/src/pivi.c.o -c /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/pivi.c",
+  "file": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/pivi.c",
+  "output": "CMakeFiles/cfunc.dir/src/pivi.c.o"
+},
+{
+  "directory": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build",
+  "command": "/usr/bin/cc -Dcfunc_EXPORTS  -O3 -DNDEBUG -fPIC -o CMakeFiles/cfunc.dir/src/erfinv.c.o -c /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/erfinv.c",
+  "file": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/erfinv.c",
+  "output": "CMakeFiles/cfunc.dir/src/erfinv.c.o"
+},
+{
+  "directory": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build",
+  "command": "/usr/bin/c++ -Dcfunc_EXPORTS  -O3 -DNDEBUG -fPIC -o CMakeFiles/cfunc.dir/src/boost_wrapper.cpp.o -c /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/boost_wrapper.cpp",
+  "file": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/boost_wrapper.cpp",
+  "output": "CMakeFiles/cfunc.dir/src/boost_wrapper.cpp.o"
+},
+{
+  "directory": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build",
+  "command": "/usr/bin/cc   -O3 -DNDEBUG -o CMakeFiles/test.dir/src/test.c.o -c /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/test.c",
+  "file": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/test.c",
+  "output": "CMakeFiles/test.dir/src/test.c.o"
+},
+{
+  "directory": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build",
+  "command": "/usr/bin/cc   -O3 -DNDEBUG -o CMakeFiles/test.dir/src/pivi.c.o -c /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/pivi.c",
+  "file": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/pivi.c",
+  "output": "CMakeFiles/test.dir/src/pivi.c.o"
+},
+{
+  "directory": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build",
+  "command": "/usr/bin/cc   -O3 -DNDEBUG -o CMakeFiles/test.dir/src/erfinv.c.o -c /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/erfinv.c",
+  "file": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/erfinv.c",
+  "output": "CMakeFiles/test.dir/src/erfinv.c.o"
+},
+{
+  "directory": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build",
+  "command": "/usr/bin/c++   -O3 -DNDEBUG -o CMakeFiles/test.dir/src/boost_wrapper.cpp.o -c /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/boost_wrapper.cpp",
+  "file": "/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/src/boost_wrapper.cpp",
+  "output": "CMakeFiles/test.dir/src/boost_wrapper.cpp.o"
+}
+]

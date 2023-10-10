@@ -1,0 +1,4 @@
+/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build/CMakeFiles/cfunc.dir
+/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build/CMakeFiles/test.dir
+/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build/CMakeFiles/edit_cache.dir
+/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/tests/c_functions/build/CMakeFiles/rebuild_cache.dir

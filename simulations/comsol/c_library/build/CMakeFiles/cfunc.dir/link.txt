@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,libcfunc.so -o libcfunc.so CMakeFiles/cfunc.dir/src/interface.c.o CMakeFiles/cfunc.dir/src/pivi.c.o CMakeFiles/cfunc.dir/src/erfinv.c.o CMakeFiles/cfunc.dir/src/boost_wrapper.cpp.o  /usr/lib/libgsl.so /usr/lib/libgslcblas.so -lm -ldpivi 

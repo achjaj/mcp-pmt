@@ -1,0 +1,3 @@
+#!/bin/bash
+
+for pid in $(ps -ef | grep "[c]omsol" | awk '{print $2}'); do echo -17 > /proc/$pid/oom_adj; done

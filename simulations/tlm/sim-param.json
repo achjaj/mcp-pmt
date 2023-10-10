@@ -1,0 +1,43 @@
+{
+    "comments": [
+        " - in detector parameters specify either G or Vm (G = ln(Vs/Vm))",
+        " - xcoords and times can be either range or list; range has either min, max and len or min, max and step parameters",
+        " - i0 and psi0 can be constant, list or function",
+        " - outputDir -> location of dumped values",
+        " - output -> what should be dumped; all -> dump everything in each step; [\"array_name&[steps]\"] -> dump only certain array in certain steps"
+    ],
+
+    "Vs": 2400,
+    "Vm": 1100,
+    "C": 2.86e-13,
+    "R": 6.087e8,
+    "Lmcp": 1.5e-3,
+    "k": 1.16e4,
+
+    "xcoords": {
+        "type": "range",
+        "min": 0,
+        "max": 17.4,
+        "len": 100
+    }, 
+
+    "times": {
+        "type": "range",
+        "min": 0,
+        "max": 5e-8,
+        "len": 100
+    },
+
+    "i0": {
+        "type": "constant",
+        "value": 1.75e-12
+    },
+
+    "psi0": {
+        "type": "constant",
+        "value": 0
+    },
+
+    "outputDir": "./output",
+    "output": "all"
+}

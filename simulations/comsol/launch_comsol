@@ -1,0 +1,6 @@
+#!/bin/bash
+
+COMSOL_MATLAB_PATH="/home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/" 
+/home/jakub/comsol/bin/comsol -forcegcc -open particle.mph &
+
+kdesu /home/jakub/cernbox/Documents/diplomovka/simulácie/comsol/oom-kill-stop

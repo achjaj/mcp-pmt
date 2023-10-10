@@ -1,0 +1,8 @@
+diam 20[um] ""
+a 40 ""
+T0 1[keV] ""
+v0 sqrt(2*T0/me_const) ""
+fly_time len/v0 ""
+step fly_time/100 ""
+len a*diam ""
+U 1[kV] ""

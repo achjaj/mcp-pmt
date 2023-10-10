@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -rdynamic CMakeFiles/test.dir/src/test.c.o CMakeFiles/test.dir/src/pivi.c.o CMakeFiles/test.dir/src/erfinv.c.o CMakeFiles/test.dir/src/boost_wrapper.cpp.o -o test  /usr/lib/libgsl.so /usr/lib/libgslcblas.so -lm -ldpivi 
