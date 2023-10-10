@@ -1,4 +1,0 @@
- - počet e- generovaných pri kolízií vychádza z Poissonovej distribúcie so strednou hodnotou určenou z SEF (secondary emission function)
- - každému emitovanému e- sú priradené dva uhly vybrané z kosínusovej distribúcie; parametre KD sú parametrami modelu
- - každému emitovanému e- je priradená energia z Rayleightovej distribúcie; parametre modelu
- - v 3D sa spočíta trajektória každého e-, čím sa určí pozícia, energia a uhol nasledovnej kolízie; vstup do SEF
